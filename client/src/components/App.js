@@ -12,9 +12,11 @@ function App() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5555/messages")
+    // FIX: Use relative URL instead of localhost
+    fetch("/messages")
       .then((r) => r.json())
-      .then((messages) => setMessages(messages));
+      .then((messages) => setMessages(messages))
+      .catch(error => console.error("Error fetching messages:", error));
   }, []);
 
   function handleAddMessage(newMessage) {
