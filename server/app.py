@@ -9,7 +9,7 @@ load_dotenv()
 
 from models import db, Message
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../client/build')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
@@ -21,16 +21,11 @@ db.init_app(app)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-def serve_react(path):
-    # Use absolute path relative to this file
-    build_dir = os.path.join(os.path.dirname(__file__), '../client/build')
-    full_path = os.path.join(build_dir, path)
-    
-    if path != "" and os.path.exists(full_path):
-        return send_from_directory(build_dir, path)
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
     else:
-        return send_from_directory(build_dir, 'index.html')
-
+        return send_from_directory(app.static_folder, 'index.html')
 
 
 @app.route('/messages', methods=['GET', 'POST'])
