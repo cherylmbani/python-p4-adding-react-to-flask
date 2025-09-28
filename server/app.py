@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask import send_from_directory
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -11,7 +12,7 @@ from models import db, Message
 app = Flask(__name__,
             static_url_path='',
             static_folder='../client/build',
-            template_folder='..client/build'
+            template_folder='../client/build'
             )
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -22,9 +23,17 @@ migrate = Migrate(app, db)
 
 db.init_app(app)
 
-@app.route("/")
-def index():
-    return "Flask backend is running 🚀"
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react(path):
+    build_dir = '../client/build'
+    full_path = os.path.join(build_dir, path)
+    
+    if path and os.path.exists(full_path):
+        return send_from_directory(build_dir, path)
+    else:
+        return send_from_directory(build_dir, 'index.html')
+
 
 
 @app.route('/messages', methods=['GET', 'POST'])
