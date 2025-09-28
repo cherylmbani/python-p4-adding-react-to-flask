@@ -1,11 +1,19 @@
+import os
 from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
+from dotenv import load_dotenv
+load_dotenv()
+
 
 from models import db, Message
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app = Flask(__name__,
+            static_url_path='',
+            static_folder='../client/build',
+            template_folder='..client/build'
+            )
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 
@@ -13,6 +21,11 @@ CORS(app)
 migrate = Migrate(app, db)
 
 db.init_app(app)
+
+@app.route("/")
+def index():
+    return "Flask backend is running 🚀"
+
 
 @app.route('/messages', methods=['GET', 'POST'])
 def messages():

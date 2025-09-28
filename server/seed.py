@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
 from random import choice as rc
 
 from faker import Faker
