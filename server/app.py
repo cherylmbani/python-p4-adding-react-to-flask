@@ -26,10 +26,11 @@ db.init_app(app)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
-    build_dir = '../client/build'
+    # Use absolute path relative to this file
+    build_dir = os.path.join(os.path.dirname(__file__), '../client/build')
     full_path = os.path.join(build_dir, path)
     
-    if path and os.path.exists(full_path):
+    if path != "" and os.path.exists(full_path):
         return send_from_directory(build_dir, path)
     else:
         return send_from_directory(build_dir, 'index.html')
